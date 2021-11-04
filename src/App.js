@@ -1,29 +1,42 @@
 import "./App.css";
-import { FormControl, MenuItem, Select } from "@material-ui/core";
+import { FormControl, MenuItem, Select, Card, CardContent } from "@material-ui/core";
 import { useState, useEffect } from "react";
-import InfoBox from "./components/InfoBox";
-import Map from "./components/Map";
+import InfoBox from "./components/InfoBox/InfoBox";
+import Map from "./components/Map/Map";
+import Table from "./components/Table/Table"
+import {sortData} from "./utils/utils"
 
 function App() {
   const [countries, setCountries] = useState([]);
-  const [country, setCountry] = useState(["Worldwide"])
+  const [country, setCountry] = useState(["Worldwide"]);
+  const [countryInfo, setCountryInfo] = useState({});
+  const [tableData, setTableData] = useState([])
+
+  useEffect(() => {
+    fetch('https://disease.sh/v3/covid-19/all?allowNull=allowNull')
+      .then(response => response.json())
+      .then(data => {
+        setCountryInfo(data)
+      })
+  }, [])
 
   useEffect(() => {
     const getCountriesData = async () => {
-      try{
-        await fetch("https://disease.sh/v3/covid-19/countries?sort=cases&allowNull=allowNull")
-        .then(response => response.json())
-        .then(data => {
-          console.log(data)
-          const countries = data.map(country => (
-            {
-              name: country.country,
-              value: country.countryInfo.iso3
-            }
-          ));
-          setCountries(countries)
-        })
-      } catch(err){
+      try {
+        await fetch("https://disease.sh/v3/covid-19/countries?allowNull=allowNull")
+          .then(response => response.json())
+          .then(data => {
+            const countries = data.map(country => (
+              {
+                name: country.country,
+                value: country.countryInfo.iso3
+              }
+            ));
+            const sortedData = sortData(data)
+            setTableData(sortedData)
+            setCountries(countries)
+          })
+      } catch (err) {
         console.log(err)
       }
     }
@@ -31,9 +44,19 @@ function App() {
     getCountriesData()
   }, []);
 
-  const onCountryChange = (event) => {
+  const onCountryChange = async (event) => {
     const countryCode = event.target.value;
-    setCountry(countryCode)
+
+    const url = countryCode === 'Worldwide' ? 
+      'https://disease.sh/v3/covid-19/all?allowNull=allowNull' 
+      : `https://disease.sh/v3/covid-19/countries/${countryCode}?strict=true&allowNull=allowNull`
+
+    await fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      setCountry(countryCode)
+      setCountryInfo(data)
+    })
   }
 
   return (
@@ -43,25 +66,31 @@ function App() {
           <h1> COVID-19 TRACKER</h1>
           <FormControl className="app_dropdown">
             <Select variant="outlined" value={country} onChange={onCountryChange}>
-            <MenuItem value="Worldwide">Worldwide</MenuItem>
-            {countries.map(country => (
-              <MenuItem value={country.value}>{country.name}</MenuItem>
-            ))}
+              <MenuItem value="Worldwide">Worldwide</MenuItem>
+              {countries.map(country => (
+                <MenuItem value={country.value}>{country.name}</MenuItem>
+              ))}
             </Select>
           </FormControl>
         </div>
 
         <div className="app_stats">
-          <InfoBox title = 'Coronavirus cases' total={2000} cases={12345}/>
-          <InfoBox title = 'Recovered' total={3000} cases={1234}/>
-          <InfoBox title = 'Deaths' total={4000} cases={123}/>
+          <InfoBox title='Corona Virus Cases' total={countryInfo.cases} cases={countryInfo.todayCases} />
+          <InfoBox title='Recovered' total={countryInfo.recovered} cases={countryInfo.todayRecovered} />
+          <InfoBox title='Deaths' total={countryInfo.deaths} cases={countryInfo.todayDeaths} />
         </div>
         <Map />
       </div>
 
-      <div className="app_right">
-        
-      </div>
+      <Card className="app_right">
+        <CardContent>
+          <h3>Live Cases by Country</h3>
+          {/* Table */}
+          <Table countries={tableData} />
+          <h3>Worldwide new case</h3>
+          {/* Graph */}
+        </CardContent>
+      </Card>
     </div>
   );
 }
