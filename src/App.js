@@ -5,6 +5,8 @@ import InfoBox from "./components/InfoBox/InfoBox";
 import Map from "./components/Map/Map";
 import Table from "./components/Table/Table"
 import {sortData} from "./utils/utils"
+import LineGraph from "./components/LineGraph/LineGraph";
+import 'leaflet/dist/leaflet.css'
 
 function App() {
   const [countries, setCountries] = useState([]);
@@ -85,10 +87,9 @@ function App() {
       <Card className="app_right">
         <CardContent>
           <h3>Live Cases by Country</h3>
-          {/* Table */}
           <Table countries={tableData} />
           <h3>Worldwide new case</h3>
-          {/* Graph */}
+          <LineGraph />
         </CardContent>
       </Card>
     </div>
