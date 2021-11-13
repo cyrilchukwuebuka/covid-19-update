@@ -17,12 +17,20 @@ body{
   color: white;
 }
 
+.app_dropdown{
+  background-color: white;
+}
+
 .app_header{
   display: flex;
   align-items: center;
   margin-bottom: 20px;
   justify-content: space-between;
 }
+
+/* .app_right{
+  flex-direction: column;
+} */
 
 .app_left{
   margin-bottom: 20px;
@@ -32,6 +40,13 @@ body{
 .app_stats{
   display: flex;
   justify-content: space-between;
+}
+
+.tableGraph{
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
 }
 
 @media (max-width: 990px){
