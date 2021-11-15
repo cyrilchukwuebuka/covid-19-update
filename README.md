@@ -12,4 +12,5 @@ and quick update on covid-19 cases around the world.
 * [React Chart.js / Chart.js](https://www.chartjs.org/docs/)
 * [Material UI](https://mui.com/)
 
-The link to the site can be found [here](https://cyril-covid-19-update.netlify.app/)
+The link to the site can be found [here](https://cyril-covid-19-update.netlify.app/)  
+[Drafted Prototype](https://drive.google.com/file/d/1iHF-eo6Mr4evazVs1419G5ttEmMDe47v/view?usp=sharing)
